@@ -1,0 +1,6 @@
+.idea
+out
+redalert2.iml
+# macOS中Finder在目录中生成的数据文件，用于存储目录展示方式
+.DS_Store
+/repository
