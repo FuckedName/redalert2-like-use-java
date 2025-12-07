@@ -1779,7 +1779,7 @@ public class GameFrame extends JFrame {
         //选中菜单的建筑物，但是未点击合适的建筑位置，鼠标移动中
         //这个临时的建筑物选中时，鼠标移动会跟着动，直到鼠标移动到一个合适的位置安装建筑
         Unit buildingTemp = buildingSelected;
-        if (buildingTemp != null)
+        if (buildingTemp != null && buildingSelected.unitType < 200000)
         {
             bufferedImageGraphics.drawImage(buildingTemp.displayOnMapImage,
                     buildingTemp.position.x * cellSize,
