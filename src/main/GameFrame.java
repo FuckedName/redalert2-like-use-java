@@ -1205,7 +1205,7 @@ public class GameFrame extends JFrame {
                 buildingItems.totalHeight,
                 BufferedImage.TYPE_INT_RGB);
         buildItemsBufferedImageGraphics = buildItemsBufferedImage.createGraphics();
-
+        resetSubMenu();
         menuList = new ArrayList<>();
 
 
@@ -1242,7 +1242,9 @@ public class GameFrame extends JFrame {
             x1 += width1 * cellSize;
             //
         }
-        y1 += 8 * height1 * cellSize;
+
+        //让菜单位置更加合理些
+        y1 += 3 * cellSize + radio.height;
         goldBuildingID = menuList.size() - 2;
 
         graphics.setColor(Global.MENU_FONT_COLOR);
@@ -2206,18 +2208,8 @@ public class GameFrame extends JFrame {
      */
     private void resetSubMenu()
     {
-        buildItemsBufferedImageGraphics.setColor(Color.black);
-        for (int i = 0; i < Global.SUB_MENU_LINE_MAX; i++) // 7 行
-        {
-            for (int j = 0; j < Global.SUB_MENU_COLUMN_MAX; j++) // 每行2个
-            {
-                buildItemsBufferedImageGraphics.fillRect(
-                        130 * j,
-                        130 * i,
-                        buildingItems.width,
-                        buildingItems.height);
-            }
-        }
+        buildItemsBufferedImageGraphics.fillRect(0,0,buildingItems.totalWidth,
+                buildingItems.totalHeight);
     }
 
     /**
@@ -2225,6 +2217,7 @@ public class GameFrame extends JFrame {
      */
     private void displaySubMenu()
     {
+        resetSubMenu();
         int buildingCount = buildingsForPanel.get(currentDisplayedMenu).size();
 
         if (buildingCount == 0)
@@ -2263,10 +2256,10 @@ public class GameFrame extends JFrame {
                         130 * i,
                         buildingItems.width - 5,
                         buildingItems.height - 5);
-
+/*
                 buildItemsBufferedImageGraphics.drawString("" + 130 * j + " " + 130 * i,
                         130 * j,
-                        130 * i);
+                        130 * i);*/
             }
         }
     }
@@ -2411,7 +2404,7 @@ public class GameFrame extends JFrame {
 
         drawCell2();
 
-        drawCellHeight();
+        //drawCellHeight();
 
         //攻击检测，游戏里只有服务器才会进行攻击检测
         if (MainThread.thisDeviceType == DeviceType.SERVER)

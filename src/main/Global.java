@@ -179,7 +179,7 @@ public class Global
 
     public static final Color UNIT_SELECTED = Color.green;   //单位被选中
     public static final Color NEUTRAL_UNIT = Color.white;    //中立单位
-    public static final Color MENU_DEFAULT = Color.red;      //
+    public static final Color MENU_DEFAULT = Color.white;      //
     public static final Color MENU_FONT_COLOR = Color.black;      //
     public static final Color MENU_BACKGROUND_COLOR = Color.red;      //
     public static final Color FIRE_AREA = Color.red;         //
