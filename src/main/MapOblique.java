@@ -185,6 +185,10 @@ public class MapOblique {
                     new ModelSize(3,3),
                     new ModelSize(1,1),},
 
+            //[5][0]
+            {new ModelSize(1,1),
+                    new ModelSize(10,10),
+                    new ModelSize(10,10),},
     };
 
 

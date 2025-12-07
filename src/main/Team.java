@@ -781,7 +781,7 @@ public class Team {
 
 
         //因为飞行兵是在兵营附近，兵营是在陆地上
-        Coord cell = MapOblique.findCell(position2, 2, CellType.LAND);
+        Coord cell = MapOblique.findCell(position2, 5, CellType.LAND);
         if (cell != null)
         {
             switch (unitType) {
@@ -842,7 +842,7 @@ public class Team {
         //其实挺难的
         Coord position2 = new Coord(position.x + 2, position.y + 2);
 
-        Coord cell = MapOblique.findCell(position2, 2, CellType.SEA);
+        Coord cell = MapOblique.findCell(position2, 5, CellType.SEA);
         if (cell != null)
         {
             position2 = cell;
@@ -894,7 +894,7 @@ public class Team {
         //其实挺难的
         Coord position2 = new Coord(position.x + 2, position.y + 2);
 
-        Coord cell = MapOblique.findCell(position2, 2, CellType.LAND);
+        Coord cell = MapOblique.findCell(position2, 5, CellType.LAND);
         if (cell != null)
         {
             position2 = cell;

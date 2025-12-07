@@ -186,6 +186,7 @@ public class GameFrame extends JFrame {
         setVisible(true);
         //setTitle("红色有点警戒2");
         graphics = getContentPane().getGraphics();
+        graphics.setFont(new Font("", Font.BOLD,15));
         logger.info("MainThread.thisDeviceType: " + MainThread.thisDeviceType);
         buildingSelected = null;
         currentDisplayedMenu = BUILD_MENU.MAX;
@@ -279,6 +280,7 @@ public class GameFrame extends JFrame {
                     String name)
     {
         graphics.setColor(selectedStatus);
+        graphics.setFont(new Font("", Font.BOLD,15));
         graphics.fillRect(x, y, width, height);
 
         graphics.setColor(Global.MENU_FONT_COLOR);
@@ -1265,7 +1267,7 @@ public class GameFrame extends JFrame {
      */
     void initMapImagePath()
     {
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 10; j++) {
                 String mapName = "0-地图\\" + i + "-" + j;
                 mapImages[i][j] = Global.getImage(Global.resourcePath + mapName + ".png");
@@ -2462,6 +2464,12 @@ public class GameFrame extends JFrame {
                     }
                 }
                 if (type == 4) {
+                    if (subtype >= 1 && subtype <= 6)
+                    {
+                        drawWidthModelSize(mapImages[type][subtype], x, y, modelSize);
+                    }
+                }
+                if (type == 5) {
                     if (subtype >= 1 && subtype <= 6)
                     {
                         drawWidthModelSize(mapImages[type][subtype], x, y, modelSize);
