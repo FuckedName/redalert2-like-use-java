@@ -26,6 +26,8 @@ public class GameFrame extends JFrame {
     
     //保存鼠标移动后的位置事件
     MouseEvent mouseEvent1 = null;
+    String status = "";
+    String title;
     
     //这是地图的大小
     private final int mapWidth;//画板的宽度
@@ -139,7 +141,7 @@ public class GameFrame extends JFrame {
      */
     GameFrame()
     {
-        String title = "Red alert 2 " + MainThread.thisDeviceType;
+        title = "Red alert 2 ID: " + MainThread.thisDeviceType;
         selfTeamID = MainThread.thisDeviceType;
         enemyTeamID = 1;
 
@@ -501,6 +503,12 @@ public class GameFrame extends JFrame {
                     return;
                 }
 
+                //当前如果有多个单位被选中，则不能通过鼠标移动修改单位被选中的状态
+                if (!unitArrayListSelected.isEmpty())
+                {
+                    return;
+                }
+
                 //这里想实现的功能是鼠标移动到单位（建筑，坦克、兵等等）时，单位显示绿色，鼠标离开单位时，单位显示为红色
                 //因为鼠标移动只会有一个单位被选择到，如果把所有单位都放到一个数组，那么只需要遍历一遍数组就可以
                 //知道当前鼠标光标对应的单位或者没有单位
@@ -849,7 +857,109 @@ public class GameFrame extends JFrame {
         afterPlantBuilding(currentDisplayedMenu, type);
     }
 
-    void handleBuildingSelected(Coord mouseToMap)
+
+
+    void handleUnitArrayListSelected(
+            Unit unit, Coord mouseToMap)
+    {
+        Team team0 = teamArrayList.get(selfTeamID);
+        //船厂
+        if (unit.unitType > 240000 && unit.unitType < 340000)
+        {
+            pointList.clear();
+            pointList.add(unit.position);
+            pointList.add(mouseToMap);
+
+            boolean b = team0.seaUnitsGenerateToGoPath(unit, mouseToMap);
+            if (b)
+            {
+                return;
+            }
+        }
+        //原来坦克被选中，现在鼠标点了一个新的位置，那么坦克先生成一个路径列表，再移动到新的位置
+        else if (unit.unitType > 340000 && unit.unitType < 430000)//坦克
+        {
+            pointList.clear();
+            pointList.add(unit.position);
+            pointList.add(mouseToMap);
+
+            boolean b = team0.landUnitsGenerateToGoPath(unit, mouseToMap);
+            if (b)
+            {
+                return;
+            }
+        }
+        else
+
+            //原来火箭飞行兵被选中，现在鼠标点了一个新的位置，那么火箭飞行兵先生成一个路径列表，再移动到新的位置
+            if (unit.unitType > 430000) {
+                teamArrayList.get(selfTeamID).airUnitsGenerateToGoPath(unit, mouseToMap);
+                return;
+            }
+
+        //安装建筑时，需要在自己的建筑附近
+        //这里还有问题，安装建筑时，建筑的图片应该在同一个高度平面
+        //这里有点要注意，靠近友方建筑时，船厂的距离更远
+        if (teamArrayList.get(selfTeamID).isCloseToFriendlyBuilding(unit.unitType, mouseToMap))
+        {
+            //地图有些高地不平的时方也不能安装建筑
+            if (teamArrayList.get(selfTeamID).buildingInSameHeight(unit, mouseToMap)) {
+                //安装的建筑正常只会是前两个菜单
+                if (currentDisplayedMenu >= BUILD_MENU.BARRACKS) {
+                    return;
+                }
+
+                //有个例外的建筑，船厂是在海里修建
+
+                //是海面
+                if (MapOblique.isMapCellSea(mouseToMap))
+                {
+                    logger.info("地图单元是海面，除了船厂外不能安装其他建筑！");
+
+                    //是船厂
+                    if (unit.unitType == UNIT_TYPE.DOCKYARD)
+                    {
+                        Unit buildingSelected1 = unit;
+                        handleMainBuildingInstall(buildingSelected1, mouseToMap);
+                    }
+                }
+                else //不是海面
+                {
+                    //不是船厂
+                    if (unit.unitType != UNIT_TYPE.DOCKYARD)
+                    {
+                        Unit buildingSelected1 = unit;
+                        handleMainBuildingInstall(buildingSelected1, mouseToMap);
+                    }
+                }
+            }
+            else
+            {
+                logger.info("地面不平，不能安装建筑");
+            }
+        }
+        else
+        {
+            logger.info("距离友方建筑太远，不能安装建筑");
+        }
+
+        for (int i = 0; i < menuList.size(); i++) {
+            Building building = menuList.get(i);
+            if (Global.inRectangle(mouseToMap, building))
+            {
+                //这里只处理了展开菜单，实际还有很多菜单需要处理
+                if (building.name.equals("展开"))
+                {
+                    if (unit != null && unit.name.equals("盟军基地")) {
+                        //buildingStep = 1;
+                        unit = null;
+                    }
+                }
+            }
+        }
+    }
+
+    void handleUnitSelected(Coord mouseToMap)
     {
         Team team0 = teamArrayList.get(selfTeamID);
 
@@ -866,11 +976,8 @@ public class GameFrame extends JFrame {
                 return;
             }
         }
-        else
-
         //原来坦克被选中，现在鼠标点了一个新的位置，那么坦克先生成一个路径列表，再移动到新的位置
-        //坦克
-        if (buildingSelected.unitType > 340000 && buildingSelected.unitType < 430000)
+        else if (buildingSelected.unitType > 340000 && buildingSelected.unitType < 430000)//坦克
         {
             pointList.clear();
             pointList.add(buildingSelected.position);
@@ -982,13 +1089,24 @@ public class GameFrame extends JFrame {
                 if (e.getButton() == 3)
                 {
                     buildingSelected = null;
+                    unitArrayListSelected.clear();
+                    return;
+                }
+
+                if (!unitArrayListSelected.isEmpty())
+                {
+                    for (int i = 0; i < unitArrayListSelected.size(); i++) {
+                        Unit unit = unitArrayListSelected.get(i);
+                        handleUnitArrayListSelected(unit, mouseWithDisplayWindowToMap);
+                    }
+
                     return;
                 }
 
                 //当前有建筑或者菜单被选中
                 if (buildingSelected != null)
                 {
-                    handleBuildingSelected(mouseWithDisplayWindowToMap);
+                    handleUnitSelected(mouseWithDisplayWindowToMap);
                     return;
                 }
                 else if (Global.inRectangle(mouseWithDisplayWindowToMap, team0.mainBuilding)) //判断主建筑是否被选中,这里有点BUG，主基地也可能有很多个，这里只判断了一个
@@ -1048,12 +1166,14 @@ public class GameFrame extends JFrame {
                 {
                     //如果点击的是空地，则记录鼠标的位置，如果连续点击两个空白的地方，那表示要选择这两个点组成矩形里所有的单位
                     mouseFirstPoint = mouse2;
+                    status = "mouseFirstPoint clicked: " + mouse2;
                     return;
                 }
 
                 if (mouseFirstPoint.x >= 0)
                 {
                     mouseSecondPoint = mouse2;
+                    status = "mouseSecondPoint clicked: " + mouse2;
 
                     Coord[] points = new Coord[2];
                     points[0] = mouseFirstPoint;
@@ -2433,6 +2553,7 @@ public class GameFrame extends JFrame {
     void updateWindow()
     {
         //logger.info(String.valueOf(mouseEvent1));
+        setTitle(title + status);
 
         displayedWindowMove();
 
