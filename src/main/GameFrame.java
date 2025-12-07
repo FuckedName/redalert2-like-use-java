@@ -95,6 +95,9 @@ public class GameFrame extends JFrame {
     ArrayList<ArrayList<Unit>> buildingsForPanel;
 
     Point[] mouseSelectRectangle;
+    Coord mouseFirstPoint = new Coord(-1, -1);
+    Coord mouseSecondPoint = new Coord(-1, -1);
+    Coord mouseThirdPoint;
 
     Color buildingTempColor = new Color(0, 255, 0);
 
@@ -124,6 +127,7 @@ public class GameFrame extends JFrame {
     //当前选中的建筑，这里有点问题，只能选择1个，如果有多个单位，比如同时选中20辆坦克，20个步兵等等
     //所以建设用数组存放
     Unit buildingSelected;
+    ArrayList<Unit> unitArrayListSelected;
     ArrayList<Coord> pointList;
 
     //地图玩家视角本来是从侧上方看地图的，理论上来说纵坐标会扁一点，这里正常设置为0.8比较合适
@@ -213,6 +217,8 @@ public class GameFrame extends JFrame {
         addKeyCapture();
 
         teamInit();
+
+        unitArrayListSelected = new ArrayList<>();
 
         Coord teamInitialHomePosition = teamArrayList.get(selfTeamID).teamInitialHomePosition;
         xStart = teamInitialHomePosition.x * cellSize - 400;
@@ -997,7 +1003,7 @@ public class GameFrame extends JFrame {
                     buildingSelected = team0.mainBuilding;
                     return;
                 }
-                else
+                else //这里是右侧菜单被选中
                 {
                     if (e.getX() > monitorWidth * 80 / 100)
                     {
@@ -1018,11 +1024,9 @@ public class GameFrame extends JFrame {
                             }
                         }
                     }
-
-
                 }
 
-                //
+                //这里是判断所有队伍中是否有单位被选中
                 for (int i = 0; i < teamArrayList.size(); i++) {
                     Team team = teamArrayList.get(i);
                     Unit building = team.unitSelected(mouse2);
@@ -1030,7 +1034,6 @@ public class GameFrame extends JFrame {
                         buildingSelected = building;
                         return;
                     }
-
                 }
 
                 if (currentDisplayedMenu == BUILD_MENU.MAX)
@@ -1038,7 +1041,40 @@ public class GameFrame extends JFrame {
                     return;
                 }
 
+                //右下侧子菜单是否有菜单被选中
                 submenuSelectedStatus(mouse);
+
+                if (mouseFirstPoint.x == -1 && mouseFirstPoint.y == -1)
+                {
+                    //如果点击的是空地，则记录鼠标的位置，如果连续点击两个空白的地方，那表示要选择这两个点组成矩形里所有的单位
+                    mouseFirstPoint = mouse2;
+                    return;
+                }
+
+                if (mouseFirstPoint.x >= 0)
+                {
+                    mouseSecondPoint = mouse2;
+
+                    Coord[] points = new Coord[2];
+                    points[0] = mouseFirstPoint;
+                    points[1] = mouseSecondPoint;
+                    logger.info("mouseFirstPoint: " + mouseFirstPoint + " mouseSecondPoint: " + mouseSecondPoint);
+                    unitArrayListSelected.clear();
+                    Team team = teamArrayList.get(selfTeamID);
+                    team.unitsSelected(points, unitArrayListSelected);
+
+                    logger.info("unit count: " + unitArrayListSelected.size() + " has been selected...");
+                    logger.info(unitArrayListSelected.toString());
+
+                    for (int i = 0; i < unitArrayListSelected.size(); i++)
+                    {
+                        unitArrayListSelected.get(i).selectedStatus = Global.UNIT_SELECTED;
+                    }
+
+                    //把记录鼠标已点击位置清空，以备下次选择
+                    mouseFirstPoint = new Coord(-1, -1);
+                    mouseSecondPoint = new Coord(-1, -1);
+                }
             }
 
             @Override

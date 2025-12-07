@@ -193,6 +193,19 @@ public class Global
                 && position.y <= point.y && position.y + building.height >= point.y;
     }
 
+
+    public static boolean inRectangle2(Coord[] points, Unit building)
+    {
+        int xMax = Math.max(points[0].x, points[1].x);
+        int xMin = Math.min(points[0].x, points[1].x);
+
+        int yMax = Math.max(points[0].y, points[1].y);
+        int yMin = Math.min(points[0].y, points[1].y);
+
+        return xMin <= building.position.x && building.position.x <= xMax
+        && yMin <= building.position.y && building.position.y <= yMax;
+    }
+
     public static int getDistance(Coord p1, Coord p2)
     {
         if (p2 == null)

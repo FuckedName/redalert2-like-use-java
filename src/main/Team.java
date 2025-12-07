@@ -509,6 +509,21 @@ public class Team {
         return buildingHasSelected(mouseDivideCellsize);
     }
 
+
+    //这里是一个队伍多个单位被选中
+    void unitsSelected(Coord[] points, ArrayList<Unit> unitArrayList)
+    {
+        points[0] = Global.pixelToMap(points[0]);
+        points[1] = Global.pixelToMap(points[1]);
+        landUnitsHasSelected2(points, unitArrayList);
+
+        seaUnitsHasSelected2(points, unitArrayList);
+
+        airUnitsHasSelected3(points, unitArrayList);
+
+        buildingHasSelected2(points, unitArrayList);
+    }
+
     public LandUnit landUnitsHasSelected(Coord mouse)
     {
         //判断坦克被选中
@@ -525,6 +540,23 @@ public class Team {
         }
 
         return null;
+    }
+
+
+    public void landUnitsHasSelected2(Coord[] points, ArrayList<Unit> unitArrayList)
+    {
+        //判断坦克被选中
+        Set<Map.Entry<Integer, ArrayList<LandUnit>>> entries = landUnitsMap.entrySet();
+        for (Map.Entry<Integer, ArrayList<LandUnit>> next : entries) {
+            ArrayList<LandUnit> buildingArrayList = next.getValue();
+            for (int i = 0; i < buildingArrayList.size(); i++) {
+                LandUnit building = buildingArrayList.get(i);
+
+                if (Global.inRectangle2(points, building)) {
+                    unitArrayList.add(building);
+                }
+            }
+        }
     }
 
 
@@ -546,6 +578,22 @@ public class Team {
         return null;
     }
 
+
+    public void seaUnitsHasSelected2(Coord[] points, ArrayList<Unit> unitArrayList)
+    {
+        //判断海军被选中
+        Set<Map.Entry<Integer, ArrayList<SeaUnit>>> entries = seaUnitsMap.entrySet();
+        for (Map.Entry<Integer, ArrayList<SeaUnit>> next : entries) {
+            ArrayList<SeaUnit> buildingArrayList = next.getValue();
+            for (int i = 0; i < buildingArrayList.size(); i++) {
+                SeaUnit building = buildingArrayList.get(i);
+                if (Global.inRectangle2(points, building)) {
+                    unitArrayList.add(building);
+                }
+            }
+        }
+    }
+
     public AirUnit airUnitsHasSelected2(Coord mouse)
     {
         Set<Map.Entry<Integer, ArrayList<AirUnit>>> entries = airUnitsMap.entrySet();
@@ -563,6 +611,19 @@ public class Team {
         return null;
     }
 
+    public void airUnitsHasSelected3(Coord[] points,  ArrayList<Unit> unitArrayList)
+    {
+        Set<Map.Entry<Integer, ArrayList<AirUnit>>> entries = airUnitsMap.entrySet();
+        for (Map.Entry<Integer, ArrayList<AirUnit>> next : entries) {
+            ArrayList<AirUnit> buildingArrayList = next.getValue();
+            for (int i = 0; i < buildingArrayList.size(); i++) {
+                AirUnit building = buildingArrayList.get(i);
+                if (Global.inRectangle2(points, building)) {
+                    unitArrayList.add(building);
+                }
+            }
+        }
+    }
 
     public Building buildingHasSelected(Coord mouse)
     {
@@ -580,6 +641,22 @@ public class Team {
         }
 
         return null;
+    }
+
+
+    public void buildingHasSelected2(Coord[] points, ArrayList<Unit> buildingArrayList2)
+    {
+        //判断建筑是否被选中
+        Set<Map.Entry<Integer, ArrayList<Building>>> entries = buildingsMap.entrySet();
+        for (Map.Entry<Integer, ArrayList<Building>> next : entries) {
+            ArrayList<Building> buildingArrayList = next.getValue();
+            for (int i = 0; i < buildingArrayList.size(); i++) {
+                Building building = buildingArrayList.get(i);
+                if (Global.inRectangle2(points, building)) {
+                    buildingArrayList2.add(building);
+                }
+            }
+        }
     }
 
     //这个方法也有点问题，正常的话应该是通过建筑物ID来获取位置，
