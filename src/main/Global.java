@@ -287,12 +287,12 @@ public class Global
     public static final String ACCEPT_FROM_SERVER = "Accept request, send from server: ";
 
     //8个队伍颜色初始化
-    public static final Color[] colors = new Color[]{Color.blue,
+    public static final Color[] colors = new Color[]{Color.red,
             Color.yellow,
             Color.cyan,
             Color.orange,
             Color.pink,
-            Color.magenta,
+            Color.blue,
             Color.green};
 
     //队伍基地位置,当前的地图还比较小，只支持两个基地点

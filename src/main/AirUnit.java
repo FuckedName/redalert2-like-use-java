@@ -20,7 +20,7 @@ public class AirUnit extends Unit  implements Serializable {
                    String imageInPath
                    )
     {
-        super(name, teamID, position, unitType,1,1,500,
+        super(name, teamID, position, unitType,2,2,500,
                 selectedStatus,imageInPath);
     }
 

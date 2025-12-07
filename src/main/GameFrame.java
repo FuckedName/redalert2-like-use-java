@@ -858,6 +858,13 @@ public class GameFrame extends JFrame {
     }
 
 
+    /**
+     * 每个单位进行寻路
+     *
+     * unit 单位
+     * mouseToMap 目的地
+     *
+     */
 
     void handleUnitArrayListSelected(
             Unit unit, Coord mouseToMap)
@@ -1095,9 +1102,16 @@ public class GameFrame extends JFrame {
 
                 if (!unitArrayListSelected.isEmpty())
                 {
+                    Unit unit0 = unitArrayListSelected.get(0);
                     for (int i = 0; i < unitArrayListSelected.size(); i++) {
                         Unit unit = unitArrayListSelected.get(i);
-                        handleUnitArrayListSelected(unit, mouseWithDisplayWindowToMap);
+                        int x1 = unit.position.x - unit0.position.x;
+                        int y1 = unit.position.y - unit0.position.y;
+                        int x2 = mouseWithDisplayWindowToMap.x + x1;
+                        int y2 = mouseWithDisplayWindowToMap.y + y1;
+
+                        //每个单位进行寻路，这里感觉有优化的空间，因为很多单位可以走相同的路
+                        handleUnitArrayListSelected(unit, new Coord(x2, y2));
                     }
 
                     return;
@@ -1181,6 +1195,8 @@ public class GameFrame extends JFrame {
                     logger.info("mouseFirstPoint: " + mouseFirstPoint + " mouseSecondPoint: " + mouseSecondPoint);
                     unitArrayListSelected.clear();
                     Team team = teamArrayList.get(selfTeamID);
+
+                    //把自己队伍里所有在鼠标点击两个点以内所有单位
                     team.unitsSelected(points, unitArrayListSelected);
 
                     logger.info("unit count: " + unitArrayListSelected.size() + " has been selected...");
