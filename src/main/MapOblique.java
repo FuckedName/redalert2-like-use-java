@@ -315,6 +315,7 @@ public class MapOblique {
         if (coord.x < 0 || coord.x >= width || coord.y < 0 || coord.y >= height)
             return false;
 
+        //高度为1的是海面
         if (findCellType == CellType.LAND && heightData[current.y][current.x] <= 1)
         {
             return false;
@@ -327,7 +328,11 @@ public class MapOblique {
 
         // 判断是否是不可通过的结点
         // 这里实际上地图上的上下坡
-        if (abs(currentCellHeight - newCellHeight) > 1)
+        if (findCellType == CellType.LAND && abs(currentCellHeight - newCellHeight) > 1)
+            return false;
+
+        // 1是海面
+        if (findCellType == CellType.SEA && data[coord.y][coord.x] / 100 % 10 != 1)
             return false;
 
         // 判断结点是否存在close表
