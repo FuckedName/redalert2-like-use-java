@@ -72,6 +72,7 @@ public class GameFrame extends JFrame {
 
     //存放地图数组
     int[][] data;
+    ArrayList<Coord> bridgeArrayList;
 
     //地图最小模型大小，有的格子占1*1，有的占1*2，1*2这样，尤其是在高地的边缘
     ModelSize[][] modelSizes;
@@ -148,6 +149,16 @@ public class GameFrame extends JFrame {
         MapOblique map = new MapOblique();
         map.printHeight();
         data = MapOblique.data;
+        bridgeArrayList = new ArrayList<>();
+        for (int y = 0; y < MapOblique.height; y++) {
+            for (int x = 0; x < MapOblique.width; x++) {
+                if (data[y][x] / 100 % 10 == 5)
+                {
+                    bridgeArrayList.add(new Coord(x, y));
+                };
+            }
+        }
+
         mapWidth = MapOblique.width * Global.cellSize;
         mapHeight = (int) (MapOblique.height * Global.cellSize * heightRate);
         setTitle(title);
@@ -1591,7 +1602,7 @@ public class GameFrame extends JFrame {
     }
 
     //这里绘制的一般是占1个格子的地图图片
-    void drawCell()
+    void drawCell11()
     {
         //画普通地图
         for (int y = 0; y < data.length; y++) {
@@ -1944,9 +1955,9 @@ public class GameFrame extends JFrame {
     }
 
     /**
-     * 绘制队伍
+     * 绘制队伍中陆地单位/空中单位
      */
-    void drawTeams()
+    void drawLandAndAirUnitsOfTeam()
     {
         drawMainBuilding();
 
@@ -1995,6 +2006,16 @@ public class GameFrame extends JFrame {
                 ArrayList<AirUnit> buildingArrayList = next.getValue();
                 drawAirUnitList(buildingArrayList, i);
             }
+        }
+    }
+
+    /**
+     * 绘制队伍中船
+     */
+    void drawSeaUnitsOfTeam()
+    {
+        for (int i = 0; i < teamArrayList.size(); i++) {
+            Team team = teamArrayList.get(i);
 
             Set<Map.Entry<Integer, ArrayList<SeaUnit>>> entries4 = team.seaUnitsMap.entrySet();
             for (Map.Entry<Integer, ArrayList<SeaUnit>> next : entries4)
@@ -2158,6 +2179,7 @@ public class GameFrame extends JFrame {
 
             int moveDirection = building.computeMoveDirection();
             Coord coord = new Coord(position.x * cellSize, position.y * cellSize);
+
             bufferedImageGraphics.drawImage(building.imagePath[0][moveDirection - 1],
                     coord.x,
                     (int) (coord.y*heightRate),
@@ -2439,7 +2461,7 @@ public class GameFrame extends JFrame {
     }
 
     //这里绘制的一般是占多个格子的地图图片，比如悬崖
-    void drawCell2()
+    void drawCell24()
     {
         // 画高度高于2的地图
         for (int y = 0; y < data.length; y++)
@@ -2469,16 +2491,36 @@ public class GameFrame extends JFrame {
                         drawWidthModelSize(mapImages[type][subtype], x, y, modelSize);
                     }
                 }
-                if (type == 5) {
-                    if (subtype >= 1 && subtype <= 6)
-                    {
-                        drawWidthModelSize(mapImages[type][subtype], x, y, modelSize);
-                    }
-                }
             }
             //System.out.println();
         }
         //System.out.println();
+    }
+
+    //这里绘制的是桥
+    void drawCellBridge()
+    {
+        for (int i = 0; i < bridgeArrayList.size(); i++) {
+            Coord coord = bridgeArrayList.get(i);
+            int y = coord.y;
+            int x = coord.x;
+            int cell = data[coord.y][coord.x];
+            if (cell < 0)
+            {
+                continue;
+            }
+            int type = cell / 100;
+            type %= 10;
+            int subtype = cell / 10 % 10;
+            //这里代码不太好，双层for循环里有IO
+            ModelSize modelSize = modelSizes[type][subtype];
+            if (type == 5) {
+                if (subtype >= 1 && subtype <= 6)
+                {
+                    drawWidthModelSize(mapImages[type][subtype], x, y, modelSize);
+                }
+            }
+        }
     }
 
     /**
@@ -2581,9 +2623,15 @@ public class GameFrame extends JFrame {
 
         displayedWindowMove();
 
-        drawCell();
+        drawCell11();
 
-        drawCell2();
+        drawCell24();
+
+        //因为有时候有桥，所以需要先绘制海里单位
+        drawSeaUnitsOfTeam();
+
+        //绘制桥
+        drawCellBridge();
 
         //drawCellHeight();
 
@@ -2593,7 +2641,11 @@ public class GameFrame extends JFrame {
             attackCheck2(); //上一步有移动后，就有可能会进入单位的攻击范围，所以进行攻击检测
         }
 
-        drawTeams(); //画完坦克、兵种、空中单位后，会执行move动作
+        //原来的地图没有桥梁：先画地图的格子，再画超过1*1大小的格子，再画坦克/兵/船
+        //地图上有了桥梁后：需要先画地图的格子，再画超过1*1大小的格子，画船，画桥，画坦克，画空中单位
+        //画完坦克、兵种、空中单位后，会执行move动作
+        //绘制陆地单位/空中单位
+        drawLandAndAirUnitsOfTeam();
 
         drawBullets();
 
