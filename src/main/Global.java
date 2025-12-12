@@ -250,6 +250,57 @@ public class Global
         return (int) sqrt(absx * absx + absy * absy);
     }
 
+
+    /**
+     * 这是计算移动方向的，因为不同的移动方向，在界面显示的图片不一样，一共有8个方向
+     * @param xIncrease
+     * @param yIncrease
+     * @return
+     */
+    public static int computeMoveDirection(int xIncrease, int yIncrease)
+    {
+        int almost = 1;
+        int absx = abs(xIncrease);
+        int absy = abs(yIncrease);
+        int x1 = - xIncrease;
+        int y1 = - yIncrease;
+
+        if (x1 < 0 && absy < almost)
+        {
+            return 1;
+        }
+        else if (x1 < 0 && y1 < 0)
+        {
+            return 2;
+        }
+        else if (absx < almost && y1 < 0)
+        {
+            return 3;
+        }
+        else if (x1 > 0 && y1 < 0)
+        {
+            return 4;
+        }
+        else if (x1 > 0 && absy < almost)
+        {
+            return 5;
+        }
+        else if (x1 > 0 && y1 > 0)
+        {
+            return 6;
+        }
+        else if (absx < almost && y1 > 0)
+        {
+            return 7;
+        }
+        else if (x1 < 0 && y1 > 0)
+        {
+            return 8;
+        }
+
+        return 1;
+    }
+
     //像素坐标转为地图坐标
     public static Coord pixelToMap(Coord input)
     {

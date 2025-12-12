@@ -4,6 +4,8 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import static java.lang.Math.abs;
+
 //空中单位
 public class AirUnit extends Unit  implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -68,7 +70,7 @@ public class AirUnit extends Unit  implements Serializable {
         }
         int xIncrease = (mapToPixelEnd.x - mapToPixelStart.x) / moveStepTotal;
         int yIncrease = (mapToPixelEnd.y - mapToPixelStart.y) / moveStepTotal;
-        moveDerection = computeMoveDerection(xIncrease, yIncrease);
+        moveDerection = Global.computeMoveDirection(xIncrease, yIncrease);
         ArrayList<Coord> pathTemp = new ArrayList<>();
 
         //每次移动一个地图上的格子是最好的，但是如何做到呢，原来因为使用的像素，比较容易，现在使用的地图坐标，计算除法的时候
@@ -80,54 +82,4 @@ public class AirUnit extends Unit  implements Serializable {
         pathCurrentIndex = 0;
         pathPlanToGo = pathTemp;
     }
-
-
-    /**
-     * 这是计算移动方向的，因为不同的移动方向，在界面显示的图片不一样，一共有8个方向
-     * @param xIncrease
-     * @param yIncrease
-     * @return
-     */
-    public int computeMoveDerection(int xIncrease, int yIncrease)
-    {
-        Coord currentPosition = new Coord(20, 20);
-        Coord nextPosition = new Coord(20 + xIncrease, 20 + yIncrease);
-
-        if (currentPosition.x < nextPosition.x && currentPosition.y == nextPosition.y)
-        {
-            return 1;
-        }
-        else if (currentPosition.x < nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            return 2;
-        }
-        else if (currentPosition.x == nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            return 3;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            return 4;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y == nextPosition.y)
-        {
-            return 5;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            return 6;
-        }
-        else if (currentPosition.x == nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            return 7;
-        }
-        else if (currentPosition.x < nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            return 8;
-        }
-
-        logger.info(currentPosition + " " + nextPosition);
-        return 1;
-    }
-
 }

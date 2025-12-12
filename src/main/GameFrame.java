@@ -2074,6 +2074,7 @@ public class GameFrame extends JFrame {
             Coord position = building.getPosition();
 
             int moveDirection = building.computeMoveDirection();
+            logger.info(moveDirection + " " + position.x + " " + position.y);
             //绘制坦克
             Coord coord = new Coord(position.x * cellSize, position.y * cellSize);
             bufferedImageGraphics.drawImage(building.imagePath[0][moveDirection - 1],
@@ -2107,54 +2108,6 @@ public class GameFrame extends JFrame {
             bufferedImageGraphics.drawString(""+building.bloodCurrent+"/"+building.bloodTotal,
                     coord.x,
                     (int) (coord.y*heightRate));
-
-            //自己队伍
-            if (teamID == selfTeamID) {
-                //坦克沿着原来计划移动的路径移动
-                building.pointer.move();
-            }
-        }
-    }
-
-    void drawTankList(ArrayList<Building> buildings, int teamID)
-    {
-        for (int i = 0; i < buildings.size(); i++)
-        {
-            //logger.info("drawTankList i: " + i);
-            Building building = buildings.get(i);
-            Coord position = building.getPosition();
-
-            int moveDirection = building.computeMoveDirection();
-            //绘制坦克
-            Coord coord = new Coord(position.x * cellSize, position.y * cellSize);
-            bufferedImageGraphics.drawImage(building.imagePath[0][moveDirection - 1],
-                    coord.x,
-                    coord.y,
-                    building.width * cellSize,
-                    building.height  * cellSize,
-                    this
-            );
-
-            //这里绘制坦克是否被选中
-            bufferedImageGraphics.setColor(building.selectedStatus);
-            bufferedImageGraphics.fillArc(
-                    coord.x,
-                    coord.y,
-                    20,
-                    20,
-                    0,
-                    360);
-            int fireDistance = building.fireDistance;
-
-            //这里画的是攻击范围
-            bufferedImageGraphics.setColor(teamArrayList.get(teamID).color);
-            bufferedImageGraphics.drawArc(
-                    coord.x - fireDistance * cellSize / 2,
-                    coord.y - fireDistance * cellSize / 2,
-                    fireDistance * cellSize,
-                    fireDistance * cellSize,
-                    0,
-                    360);
 
             //自己队伍
             if (teamID == selfTeamID) {

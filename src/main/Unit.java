@@ -393,44 +393,12 @@ public class Unit  implements Serializable
         {
             return lastDirection;
         }
+
         Coord currentPosition = pathPlanToGo.get(pathCurrentIndex - 1);
         Coord nextPosition = pathPlanToGo.get(pathCurrentIndex);
-
-        if (currentPosition.x < nextPosition.x && currentPosition.y == nextPosition.y)
-        {
-            lastDirection = 1;
-        }
-        else if (currentPosition.x < nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            lastDirection = 2;
-        }
-        else if (currentPosition.x == nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            lastDirection = 3;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y < nextPosition.y)
-        {
-            lastDirection = 4;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y == nextPosition.y)
-        {
-            lastDirection = 5;
-        }
-        else if (currentPosition.x > nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            lastDirection = 6;
-        }
-        else if (currentPosition.x == nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            lastDirection = 7;
-        }
-        else if (currentPosition.x < nextPosition.x && currentPosition.y > nextPosition.y)
-        {
-            lastDirection = 8;
-        }
-
-        //logger.info("currentPosition: " + currentPosition + ", nextPosition: " + nextPosition);
-        //lastDirection = 1;
+        int xIncrease = nextPosition.x - currentPosition.x;
+        int yIncrease = nextPosition.y - currentPosition.y;
+        lastDirection = Global.computeMoveDirection(xIncrease, yIncrease);
         return lastDirection;
     }
 }
